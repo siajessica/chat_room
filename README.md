@@ -1,39 +1,83 @@
 # chat_room
 simple chat room code in C++ socket
 
+## two ways to set a database
+1. file
+  easier
+2. sqlite
+  some of my friend use this
+  
+ ## install CGI environment in Ubuntu
+ref : https://blog.csdn.net/prince1394/article/details/80295098?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-1.no_search_link&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-1.no_search_link&utm_relevant_index=2
 
-log in and some add/remove friend
-since I have no idea about mySQL, I think use file and directory will be easier.
+1. install Apache2
 
-1.accounting system :
-  
-  make a directory when someone sign up an account, and a file named password with content which is the password that user input
-  
-  or 
-  
-  make a file named 【user_list】 and write down the user's name and the password. (simpler)
-  
-2.add friend
+   enter 
+   ###### sudo apt install apache2
+ 
+2.set up CGI
 
-  make a file under the user's directory and name the directory by the name of user's friend.
+  under /etc/apache2/conf-available/
   
-  or 
+  ###### sudo vim serve-cgi-bin.conf
   
-  make a file named 【user_name】_【name of user's friend】
+  modify
   
-  write the chatting history into the file.
+  ###### ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+  ###### <Directory "/usr/lib/cgi-bin">
+  ######  AllowOverride None
+  ###### Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+  ###### Require all granted
+  ###### </Directory>
   
-3.remove friend
+  to 
+  
+  ###### ScriptAlias /cgi-bin/ /var/www/html/cgi-bin/
+  ###### <Directory "/var/www/html/cgi-bin/">
+  ######  AllowOverride None
+  ###### Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+  ###### Require all granted
+  ###### AddHandler cgi-script cgi
+  ###### </Directory>
 
-  remove the file.
-
-4.one-to-one chat
-
-  record the condition of user
+  under /etc/apache2/mods-available/
   
-  a. chatting
-      
-      in this condition, other user can send message, but main_user can not reply. That's, can write the file, but cannot connect with socket.
-      
-  b. available
+  ###### sudo vim cgid.load
   
+  add 
+  
+  ###### AddHandler cgi-script .cgi .pl .py .sh
+  
+  To connect file, enter
+  
+  ###### sudo ln -s /etc/apache2/mods-available/cgid.load /etc/apache2/mods-enabled/cgid.load
+  
+ To Restart apache2,enter
+ 
+ ###### sudo /etc/init.d/apache2 restart
+ 
+ Make a new file
+ 
+ ###### sudo mkdir /var/www/html/cgi-bin/
+  
+3. create a CGI program
+
+   under    /var/www/html/cgi-bin/ 
+   
+   ###### sudo vim helloworld.c
+   
+   type 
+   #include <stdio.h>
+   int main()
+    {
+        printf("Content-Type: text/html\n\n");
+        printf("Hello World!\n");
+        return 0;
+    }
+    compile 
+    ###### sudo gcc /var/www/html/cgi-bin/helloworld.c -o /var/www/html/cgi-bin/helloworld.cgi
+    change CGI priority
+    ###### sudo chmod 755 /var/www/html/cgi-bin/helloworld.cgi
+    
+ 4. test
+    ###### http://localhost/cgi-bin/helloworld.cgi
