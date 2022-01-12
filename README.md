@@ -1,14 +1,14 @@
 # chat_room
 simple chat room code in C++ socket
 
-## two ways to set a database
+## Two ways to set a database
 1. file
   easier
 2. sqlite
   https://fred-zone.blogspot.com/2009/07/c-sqlite3.html
   
 ## Connect C and web browser by CGI 
-## install CGI environment in Ubuntu
+## Install CGI environment in Ubuntu
 ref : https://blog.csdn.net/prince1394/article/details/80295098?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-1.no_search_link&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-1.no_search_link&utm_relevant_index=2
 
 1. install Apache2
