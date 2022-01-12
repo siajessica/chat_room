@@ -7,7 +7,8 @@ simple chat room code in C++ socket
 2. sqlite
   some of my friend use this
   
- ## install CGI environment in Ubuntu
+## C 
+## install CGI environment in Ubuntu
 ref : https://blog.csdn.net/prince1394/article/details/80295098?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-1.no_search_link&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-1.no_search_link&utm_relevant_index=2
 
 1. install Apache2
