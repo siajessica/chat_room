@@ -5,7 +5,7 @@ simple chat room code in C++ socket
 1. file
   easier
 2. sqlite
-  some of my friend use this
+  https://fred-zone.blogspot.com/2009/07/c-sqlite3.html
   
 ## Connect C and web browser by CGI 
 ## install CGI environment in Ubuntu
