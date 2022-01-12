@@ -7,7 +7,7 @@ simple chat room code in C++ socket
 2. sqlite
   some of my friend use this
   
-## C 
+## Connect C and web browser by CGI 
 ## install CGI environment in Ubuntu
 ref : https://blog.csdn.net/prince1394/article/details/80295098?spm=1001.2101.3001.6650.1&utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-1.no_search_link&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-1.no_search_link&utm_relevant_index=2
 
@@ -16,50 +16,50 @@ ref : https://blog.csdn.net/prince1394/article/details/80295098?spm=1001.2101.30
    enter 
    ###### sudo apt install apache2
  
-2.set up CGI
+ 2.set up CGI
 
-  under /etc/apache2/conf-available/
+   under /etc/apache2/conf-available/
   
-  ###### sudo vim serve-cgi-bin.conf
+   ###### sudo vim serve-cgi-bin.conf
   
-  modify
+   modify
   
-  ###### ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
-  ###### <Directory "/usr/lib/cgi-bin">
-  ######  AllowOverride None
-  ###### Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
-  ###### Require all granted
-  ###### </Directory>
+   ###### ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+   ###### <Directory "/usr/lib/cgi-bin">
+   ######  AllowOverride None
+   ###### Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+   ###### Require all granted
+   ###### </Directory>
   
-  to 
+   to 
   
-  ###### ScriptAlias /cgi-bin/ /var/www/html/cgi-bin/
-  ###### <Directory "/var/www/html/cgi-bin/">
-  ######  AllowOverride None
-  ###### Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
-  ###### Require all granted
-  ###### AddHandler cgi-script cgi
-  ###### </Directory>
+   ###### ScriptAlias /cgi-bin/ /var/www/html/cgi-bin/
+   ###### <Directory "/var/www/html/cgi-bin/">
+   ######  AllowOverride None
+   ###### Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+   ###### Require all granted
+   ###### AddHandler cgi-script cgi
+   ###### </Directory>
 
-  under /etc/apache2/mods-available/
+   under /etc/apache2/mods-available/
   
-  ###### sudo vim cgid.load
+   ###### sudo vim cgid.load
   
-  add 
+   add 
   
-  ###### AddHandler cgi-script .cgi .pl .py .sh
+   ###### AddHandler cgi-script .cgi .pl .py .sh
   
-  To connect file, enter
+   To connect file, enter
   
-  ###### sudo ln -s /etc/apache2/mods-available/cgid.load /etc/apache2/mods-enabled/cgid.load
+   ###### sudo ln -s /etc/apache2/mods-available/cgid.load /etc/apache2/mods-enabled/cgid.load
   
- To Restart apache2,enter
+   To Restart apache2,enter
  
- ###### sudo /etc/init.d/apache2 restart
+   ###### sudo /etc/init.d/apache2 restart
  
- Make a new file
+   Make a new file
  
- ###### sudo mkdir /var/www/html/cgi-bin/
+   ###### sudo mkdir /var/www/html/cgi-bin/
   
 3. create a CGI program
 
