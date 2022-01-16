@@ -31,6 +31,7 @@ string def_col = "\033[0m";
 string colors[] = {"\033[31m", "\033[32m", "\033[33m", "\033[34m", "\033[35m", "\033[36m"};
 
 void catch_ctrl_c(int signal);
+string color(int code);
 void print_command();
 void send_message(int client_socket);
 void recv_message(int client_socket);
@@ -83,6 +84,7 @@ int main(){
 				cout << "PLEASE SIGN UP IF YOU DON'T HAVE AN ACCOUNT." << endl;
 			} else{
 				cout << "LOGIN SUCCESSFUL" << endl;
+				username_s = username;
 				print_command();
 			}
         }
@@ -141,7 +143,7 @@ int main(){
 			cout << "Command not found.\n";
     }
 
-	thread t1(send_message, client_socket,username_s,chat_id);
+	thread t1(send_message, client_socket, username_s, chat_id);
 	thread t2(recv_message, client_socket);
 
 	t_send = move(t1);
@@ -180,7 +182,7 @@ void print_command(){
 
 
 // Send message to everyone
-void send_message(int client_socket,string username,int chat_id)
+void send_message(int client_socket, string username, int chat_id)
 {
 	
 	while (1)
