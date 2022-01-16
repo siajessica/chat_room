@@ -154,7 +154,7 @@ int main(){
 	return 0;
 }
 
-}
+
 
 // Handler for "Ctrl + C"
 void catch_ctrl_c(int signal)
