@@ -5,22 +5,29 @@
 
 using namespace std;
 
+int userID;
+
+int userid_callback(void* NotUsed, int argc, char** argv, char** azColName){
+	userID = atoi(argv[0]);
+	return 0;
+}
+
 int login(string username, string password){
     sqlite3 *db;
     int rc = sqlite3_open("chatroom.db", &db);
     if(rc != SQLITE_OK) cerr << "error opening database." << endl;
 
-    int exist = 0;
-    string sql = "SELECT * FROM USERS WHERE USERNAME = '" + username + "' AND PASSWORD = '" + password + "';";
-    rc = sqlite3_exec(db, sql.c_str(), in_database, &exist, NULL);
+    userID = -1;;
+    string sql = "SELECT ID FROM USERS WHERE USERNAME = '" + username + "' AND PASSWORD = '" + password + "';";
+    rc = sqlite3_exec(db, sql.c_str(), userid_callback, 0, NULL);
     if(rc != SQLITE_OK) cerr << "select error." << endl;
 
-    if(exist){
+    if(userID != -1){
         sql = "UPDATE USERS SET STATUS = 1 WHERE USERNAME = '" + username + "';";
         rc = sqlite3_exec(db, sql.c_str(), NULL, 0, NULL);
-        return 1;
+        return userID;
     }
-    else return 0;
+    else return -1;
 }
 
 int logout(string username){
@@ -43,7 +50,9 @@ int sign_up(string username, string password){
     if(rc != SQLITE_OK) return 0;
     else cout << "Account created." << endl;
 
-    return 1;
+    sql = "SELECT ID FROM USERS WHERE USERNAME = '" + username + "' AND PASSWORD = '" + password + "';";
+    rc = sqlite3_exec(db, sql.c_str(), NULL, 0, NULL);
+    return userID;
 }
 
 int change_password(string username, string new_password){

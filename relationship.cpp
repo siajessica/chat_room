@@ -185,4 +185,5 @@ int unblock(string user1, string user2){
     rc = sqlite3_exec(db, sql.c_str(), NULL, 0, NULL);
     if(rc != SQLITE_OK) cerr << "error remove friend." << endl;
     else cout << "User unblocked." << endl;
+    return 1;
 }

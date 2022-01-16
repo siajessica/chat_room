@@ -21,17 +21,20 @@
 
 using namespace std;
 
-struct terminal{
+struct terminal {
 	int id;
 	string name;
 	int socket;
 	thread th;
-}
+};
 
 vector<terminal> clients;
 int seed = 0;
 mutex cout_mtx, clients_mtx;
 sqlite3 *db;
+void handle_client(int client_socket, int id);
+string chatting_user1;
+string chatting_user2;
 
 int main(){
 	int server_socket;
@@ -60,7 +63,7 @@ int main(){
 	}
 
 	createDB();
-	int rc = sqlite3_open("chatroom.db", &db);
+	//int rc = sqlite3_open("chatroom.db", &db);
 
 	struct sockaddr_in client;
 	int client_socket;
@@ -78,8 +81,8 @@ int main(){
 		lock_guard<mutex> guard(clients_mtx);
 		clients.push_back({ seed, string("Anonymous"),client_socket,(move(t)) });
 	}
-
-	for (int i = 0; i < clients.size(); i++)
+	int number_of_clients = clients.size();
+	for (int i = 0; i < number_of_clients; i++)
 	{
 		if (clients[i].th.joinable())
 			clients[i].th.join();
@@ -91,7 +94,8 @@ int main(){
 
 void end_connection(int id)
 {
-	for (int i = 0; i < clients.size(); i++)
+	int number_of_clients = clients.size();
+	for (int i = 0; i < number_of_clients; i++)
 	{
 		if (clients[i].id == id)
 		{
@@ -104,71 +108,112 @@ void end_connection(int id)
 	}
 }
 
+void broadcast_message(string message_s,string targetname)
+{
+	int number_of_clients = clients.size();
+	char message[MAX_LEN] = { 0 };
+	strcpy(message,message_s.c_str());
+	for (int i = 0; i < number_of_clients; i++)
+	{
+		if (clients[i].name == targetname)
+		{
+			send(clients[i].socket, message, MAX_LEN, 0);
+		}
+	}
+}
+
+void shared_print(string str, int current_chat_id, bool endLine = true)
+{
+	lock_guard<mutex> guard(cout_mtx);
+	cout << current_chat_id << " " << str;
+	if (endLine)
+		cout << endl;
+}
+
 void handle_client(int client_socket, int id)
 {
-	string username, password, command, target_user;
-	int ret;
+	char username[20], password[20], command[20],target_user[20];
+	string username_s, password_s,target_user_s;
+	int ret,ID,current_chat_id;
 	recv(client_socket, command, sizeof(command), 0);
 	cout << "sombody want";
 	while (1)
 	{
-		if (command == "1")
+		if (command[0] == '1')
 		{
 			cout << "sign in" << endl;
 			recv(client_socket, username, sizeof(username), 0);
 			recv(client_socket, password, sizeof(password), 0);
-			ret = login(username, password);
-			send(client_socket, ret, sizeof(ret), 0);		
+			username_s.assign(username);
+			password_s.assign(password);
+			ID = login(username_s, password_s);
+			clients[id].id = ID;
+			clients[id].name = username_s;
+			if (ID!=0)
+				send(client_socket, "1", sizeof("1"), 0);
+			else
+				send(client_socket, "0", sizeof("0"), 0);
 		}
-		else if(command = "2")
+		else if (command[0] == '2')
 		{
 			cout << "sign up" << endl;
 			recv(client_socket, username, sizeof(username), 0);
 			recv(client_socket, password, sizeof(password), 0);
-			ret = sign_up(username, password);
-			send(client_socket, ret, sizeof(ret), 0);
+			username_s.assign(username);
+			password_s.assign(password);
+			ret = sign_up(username_s, password_s);
+			if (ret)
+				send(client_socket, "1", sizeof("1"), 0);
+			else
+				send(client_socket, "0", sizeof("0"), 0);
 		}
-		else if(command == "4"){
+		else if (command[0] == '4') {
 			recv(client_socket, target_user, sizeof(target_user), 0);
-			ret = add_friend(username, target_user);
-			send(client_socket, ret, sizeof(ret), 0);
+			target_user_s.assign(target_user);
+			ret = add_friend(username_s, target_user_s);
+			if (ret)
+				send(client_socket, "1", sizeof("1"), 0);
+			else
+				send(client_socket, "0", sizeof("0"), 0);
 		}
-		else if(command == "5"){
+		else if (command[0] == '5') {
 			recv(client_socket, target_user, sizeof(target_user), 0);
-			ret = remove_friend(username, target_user);
-			send(client_socket, ret, sizeof(ret), 0);
+			target_user_s.assign(target_user);
+			ret = remove_friend(username_s, target_user_s);
+			if (ret)
+				send(client_socket, "1", sizeof("1"), 0);
+			else
+				send(client_socket, "0", sizeof("0"), 0);
+		}
+		else if(command[0] == '6') {
+			recv(client_socket, target_user, sizeof(target_user), 0);
+			target_user_s.assign(target_user);
+			current_chat_id = get_chatid(username_s, target_user_s);
+			break;
 		}
 	}
 	
-	//star to chat
-	strcpy(name, account);
-	set_name(id, name);
-	// Display welcome message
-	string welcome_message = string(name) + string(" has joined");
-	broadcast_message("#NULL", id);
-	broadcast_message(id, id);
-	broadcast_message(welcome_message, id);
-	shared_print(color(id) + welcome_message + def_col);
-
+	//std::string ID_s = std::to_string(ID);
 	while (1)
 	{
+		char str[MAX_LEN];
 		int bytes_received = recv(client_socket, str, sizeof(str), 0);
 		if (bytes_received <= 0)
-			return;
+			break;
 		if (strcmp(str, "#exit") == 0)
 		{
 			// Display leaving message
-			string message = string(name) + string(" has left");
-			broadcast_message("#NULL", id);
-			broadcast_message(id, id);
-			broadcast_message(message, id);
-			shared_print(color(id) + message + def_col);
-			end_connection(id);
-			return;
+			string message = username_s + string(" has left");
+			broadcast_message("#NULL", target_user_s);
+			//broadcast_message(ID_s, target_user_s);
+			broadcast_message(message, target_user_s);
+			shared_print(message,current_chat_id);
+			end_connection(ID);
+			break;
 		}
-		broadcast_message(string(name), id);
-		broadcast_message(id, id);
-		broadcast_message(string(str), id);
-		shared_print(color(id) + name + " : " + def_col + str);
+		broadcast_message(username_s, target_user_s);
+		//broadcast_message(ID_s, target_user_s);
+		broadcast_message(string(str), target_user_s);
+		shared_print(username_s + " : "  + str,current_chat_id);
 	}
 }

@@ -13,6 +13,29 @@ int print_chat(void* NotUsed, int argc, char** argv, char** azColName){
 	return 0;
 }
 
+int chatID;
+
+int chatid_callback(void* NotUsed, int argc, char** argv, char** azColName){
+	chatID = atoi(argv[0]);
+	return 0;
+}
+
+int get_chatid(string user1, string user2){
+    sqlite3 *db;
+    int rc = sqlite3_open("chatroom.db", &db);
+    if(rc != SQLITE_OK) cerr << "error opening database." << endl;
+
+    chatID = -1;
+    string sql = "SELECT CHAT_ID FROM FRIENDS WHERE USER1 = '" + user2 + "' AND USER2 ='" + user1 + "';";
+    rc = sqlite3_exec(db, sql.c_str(), chatid_callback, 0, NULL);
+    if(chatID == -1){
+	    sql = "SELECT CHAT_ID FROM FRIENDS WHERE USER1 = '" + user1 + "' AND USER2 = '" + user2 + "';";
+	    rc = sqlite3_exec(db, sql.c_str(), chatid_callback, 0, NULL);
+    }
+    if(chatID == -1) return -1;
+    else return chatID;
+}
+
 void message_history(int chat_id){
     sqlite3 *db;
     int rc = sqlite3_open("chatroom.db", &db);
