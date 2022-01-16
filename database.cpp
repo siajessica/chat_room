@@ -17,7 +17,7 @@ sqlite3* createDB(){
    else cout << "foreign key enabled." << endl;
 
    sql = "CREATE TABLE IF NOT EXISTS USERS("
-                    "ID         INTEGER         PRIMARY KEY	AUTOINCREMENT"
+                    "ID         INTEGER         PRIMARY KEY	AUTOINCREMENT,"
                     "USERNAME   TEXT            NOT NULL        UNIQUE,"
                     "PASSWORD   TEXT            NOT NULL,"
                     "STATUS     INTEGER         NOT NULL);";

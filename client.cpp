@@ -70,7 +70,7 @@ int main(){
         cin.getline(command, MAX_LEN);
         send(client_socket, command, sizeof(command), 0);
 
-        if((!strcmp(command, "1")) && found_account == -1) {
+        if((command[0] == '1' && found_account == -1) {
             cout << "Please enter your username: ";
             cin.getline(username, MAX_LEN);
 			send(client_socket, username, sizeof(username), 0);
@@ -78,10 +78,12 @@ int main(){
             cin.getline(password, MAX_LEN);
 			send(client_socket, password, sizeof(password), 0);
 			recv(client_socket, command, sizeof(command), 0);
-			found_account = atoi(command);
-			if(found_account) {
+			found_account = command[0]-48;
+			if(!found_account) {
 				cout << "WRONG USERNAME/PASSWORD. PLEASE TRY AGAIN." << endl;
 				cout << "PLEASE SIGN UP IF YOU DON'T HAVE AN ACCOUNT." << endl;
+				cout << "1. SIGN IN" << endl;
+				cout << "2. SIGN UP" << endl;
 			} else{
 				cout << "LOGIN SUCCESSFUL" << endl;
 				username_s = username;
@@ -96,10 +98,12 @@ int main(){
             cin.getline(password, MAX_LEN);
 			send(client_socket, password, sizeof(password), 0);
 			recv(client_socket, command, sizeof(command), 0);
-			found_account = atoi(command);
-			if(found_account){
+			found_account = command[0] - 48;
+			if(!found_account){
 				cout << "USERNAME HAS BEEN TAKEN." << endl;
 				cout << "PLEASE TRY AGAIN." << endl;
+				cout << "1. SIGN IN" << endl;
+				cout << "2. SIGN UP" << endl;
 			} else{
 				cout << "SIGN UP SUCCESSFUL" << endl;
 				print_command();
@@ -109,7 +113,7 @@ int main(){
 			send(client_socket, username, sizeof(username), 0);
 			list_friends(username);
 		}
-		else if(command[0] == '4' && found_account){
+		else if(command[0] == '4' && found_account != -1){
 			cout << "Please enter target's username: ";
 			cin.getline(target_user, MAX_LEN);
 			send(client_socket, target_user, sizeof(target_user), 0);
@@ -118,7 +122,7 @@ int main(){
 			if(command[0] == '5') cout << "Friend Added." << endl;
 			else cout << "Add friend error." << endl;
 		}
-		else if(command[0] == '5' && found_account){
+		else if(command[0] == '5' && found_account != -1){
 			cout << "Please enter target's username: ";
 			cin.getline(target_user, MAX_LEN);
 			send(client_socket, target_user, sizeof(target_user), 0);
@@ -127,7 +131,7 @@ int main(){
 			if(command[0] == '0') cout << "User not found." << endl;
 			else if(command[0] == '1') cout << "User removed.\n";
 		}
-		else if(command[0] == '6' && found_account){
+		else if(command[0] == '6' && found_account != -1){
 			cout << "Please enter friend's username: ";
 			cin.getline(target_user, MAX_LEN);
 			send(client_socket, target_user, sizeof(target_user), 0);
@@ -135,8 +139,7 @@ int main(){
 			chat_id = get_chatid(username_s, target_user_s);
 			message_history(chat_id);
 		}
-		else
-			cout << "Command not found.\n";
+		
     }
 
 	thread t1(send_message, client_socket, username_s, chat_id);
