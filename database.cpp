@@ -19,8 +19,7 @@ sqlite3* createDB(){
    sql = "CREATE TABLE IF NOT EXISTS USERS("
                     "ID         INTEGER         PRIMARY KEY	AUTOINCREMENT,"
                     "USERNAME   TEXT            NOT NULL        UNIQUE,"
-                    "PASSWORD   TEXT            NOT NULL,"
-                    "STATUS     INTEGER         NOT NULL);";
+                    "PASSWORD   TEXT            NOT NULL);";
     rc = sqlite3_exec(db, sql.c_str(), NULL, 0, &msgErr);
     if(rc != SQLITE_OK) cerr << "cannot create users table" << endl;
     else cout << "users table created." << endl;
