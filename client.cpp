@@ -6,7 +6,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include <thread>
+#include <pthread.h>
 #include <signal.h>
 #include <mutex>
 #include<cstdio>
@@ -20,20 +20,24 @@
 #include "message.h"
 
 #define MAX_LEN 1280
+#define NUM_COLORS 6
 
 using namespace std;
 
 bool exit_flag = false;
 thread t_send, t_recv;
 int client_socket;
+string def_col = "\033[0m";
+string colors[] = {"\033[31m", "\033[32m", "\033[33m", "\033[34m", "\033[35m", "\033[36m"};
 
 void catch_ctrl_c(int signal);
+string color(int code);
 void print_command();
-void send_message(int client_socket);
+void send_message(int client_socket, string username, int chat_id);
 void recv_message(int client_socket);
 
 int main(){
-    if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1)v{
+    if ((client_socket = socket(AF_INET, SOCK_STREAM, 0)) == -1){
 		perror("socket: ");
 		exit(-1);
 	}
@@ -60,14 +64,13 @@ int main(){
 
     string command_s, username_s, password_s, target_user_s;
     char command[20], username[20], password[20], target_user[20];
-	int found_account;
-	int ret = 0;
+	int found_account = -1;
 	int chat_id = 0;
     while(1){
         cin.getline(command, MAX_LEN);
         send(client_socket, command, sizeof(command), 0);
 
-        if(command[0] == '1' && !found_account) {
+        if((!strcmp(command, "1")) && found_account == -1) {
             cout << "Please enter your username: ";
             cin.getline(username, MAX_LEN);
 			send(client_socket, username, sizeof(username), 0);
@@ -75,23 +78,26 @@ int main(){
             cin.getline(password, MAX_LEN);
 			send(client_socket, password, sizeof(password), 0);
 			recv(client_socket, command, sizeof(command), 0);
-			if(!found_account) {
+			found_account = atoi(command);
+			if(found_account) {
 				cout << "WRONG USERNAME/PASSWORD. PLEASE TRY AGAIN." << endl;
 				cout << "PLEASE SIGN UP IF YOU DON'T HAVE AN ACCOUNT." << endl;
 			} else{
 				cout << "LOGIN SUCCESSFUL" << endl;
+				username_s = username;
 				print_command();
 			}
         }
-		else if(command[0] == '2' && !found_account){
+		else if(command[0] == '2'  && found_account == -1){
 			cout << "Please enter a username: ";
 			cin.getline(username, MAX_LEN);
 			send(client_socket, username, sizeof(username), 0);
 			cout << "Please enter your password: ";
             cin.getline(password, MAX_LEN);
 			send(client_socket, password, sizeof(password), 0);
-			recv(client_socket, found_account, sizeof(found_account), 0);
-			if(!found_account){
+			recv(client_socket, command, sizeof(command), 0);
+			found_account = atoi(command);
+			if(found_account){
 				cout << "USERNAME HAS BEEN TAKEN." << endl;
 				cout << "PLEASE TRY AGAIN." << endl;
 			} else{
@@ -99,33 +105,29 @@ int main(){
 				print_command();
 			}
 		}
-		else if(command == '3' && found_account){
+		else if(command[0] == '3' && found_account != -1){
 			send(client_socket, username, sizeof(username), 0);
 			list_friends(username);
 		}
-		else if(command == '4' && found_account){
+		else if(command[0] == '4' && found_account){
 			cout << "Please enter target's username: ";
 			cin.getline(target_user, MAX_LEN);
 			send(client_socket, target_user, sizeof(target_user), 0);
 			recv(client_socket, command, sizeof(command), 0);
 
-			if(command[0] == 0) cout << "User not found." << endl;
-			else if(command[0] == '1') cout << "ERROR CANNOT ADD FRIEND: You have been blocked by the user.\n";
-			else if(command[0] == '2') cout << "ERROR BLOCKED: Please unblock the user before adding as friend.\n";
-			else if(command[0] == '3') cout << "You are already friends." << endl;
-			else if(command[0] == '5') cout << "Friend Added." << endl;
+			if(command[0] == '5') cout << "Friend Added." << endl;
+			else cout << "Add friend error." << endl;
 		}
-		else if(command == '5' && found_account){
+		else if(command[0] == '5' && found_account){
 			cout << "Please enter target's username: ";
 			cin.getline(target_user, MAX_LEN);
 			send(client_socket, target_user, sizeof(target_user), 0);
-			recv(client_socket, ret, sizeof(ret), 0);
+			recv(client_socket, command, sizeof(command), 0);
 
 			if(command[0] == '0') cout << "User not found." << endl;
-			else if(command[0] == '1') cout << "User already blocked.\n";
-			else if(command[0] == '2') "User blocked successfully." << endl;
+			else if(command[0] == '1') cout << "User removed.\n";
 		}
-		else if(command == '6' && found_account){
+		else if(command[0] == '6' && found_account){
 			cout << "Please enter friend's username: ";
 			cin.getline(target_user, MAX_LEN);
 			send(client_socket, target_user, sizeof(target_user), 0);
@@ -137,7 +139,7 @@ int main(){
 			cout << "Command not found.\n";
     }
 
-	thread t1(send_message, client_socket,username_s,chat_id);
+	thread t1(send_message, client_socket, username_s, chat_id);
 	thread t2(recv_message, client_socket);
 
 	t_send = move(t1);
@@ -149,6 +151,10 @@ int main(){
 		t_recv.join();
 
 	return 0;
+}
+
+string color(int code){
+	return colors[code%NUM_COLORS];
 }
 
 // Handler for "Ctrl + C"
@@ -172,7 +178,7 @@ void print_command(){
 
 
 // Send message to everyone
-void send_message(int client_socket,string username,int chat_id)
+void send_message(int client_socket, string username, int chat_id)
 {
 	
 	while (1)

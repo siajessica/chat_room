@@ -20,7 +20,7 @@ int login(string username, string password){
     userID = -1;;
     string sql = "SELECT ID FROM USERS WHERE USERNAME = '" + username + "' AND PASSWORD = '" + password + "';";
     rc = sqlite3_exec(db, sql.c_str(), userid_callback, 0, NULL);
-    if(rc != SQLITE_OK) cerr << "select error." << endl;
+    if(rc != SQLITE_OK) cout << "select error." << endl;
 
     if(userID != -1){
         sql = "UPDATE USERS SET STATUS = 1 WHERE USERNAME = '" + username + "';";
@@ -47,7 +47,7 @@ int sign_up(string username, string password){
     string sql = "INSERT INTO USERS (USERNAME, PASSWORD) VALUES('"
                     + username + "', '" + password + "');";
     rc = sqlite3_exec(db, sql.c_str(), NULL, 0, NULL);
-    if(rc != SQLITE_OK) return 0;
+    if(rc != SQLITE_OK) return -1;
     else cout << "Account created." << endl;
 
     sql = "SELECT ID FROM USERS WHERE USERNAME = '" + username + "' AND PASSWORD = '" + password + "';";
