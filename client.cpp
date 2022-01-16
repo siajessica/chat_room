@@ -27,11 +27,9 @@ using namespace std;
 bool exit_flag = false;
 thread t_send, t_recv;
 int client_socket;
-string def_col = "\033[0m";
-string colors[] = {"\033[31m", "\033[32m", "\033[33m", "\033[34m", "\033[35m", "\033[36m"};
 
 void catch_ctrl_c(int signal);
-string color(int code);
+
 void print_command();
 void send_message(int client_socket, string username, int chat_id);
 void recv_message(int client_socket);
@@ -70,7 +68,7 @@ int main(){
         cin.getline(command, MAX_LEN);
         send(client_socket, command, sizeof(command), 0);
 
-        if((command[0] == '1' && found_account == -1) {
+        if((command[0] == '1' && found_account == -1)) {
             cout << "Please enter your username: ";
             cin.getline(username, MAX_LEN);
 			send(client_socket, username, sizeof(username), 0);
@@ -156,8 +154,6 @@ int main(){
 	return 0;
 }
 
-string color(int code){
-	return colors[code%NUM_COLORS];
 }
 
 // Handler for "Ctrl + C"
@@ -211,7 +207,7 @@ void recv_message(int client_socket)
 		if (exit_flag)
 			return;
 		char name[MAX_LEN], str[MAX_LEN];
-		int color_code;
+		
 		int bytes_received = recv(client_socket, name, sizeof(name), 0);
 		if (bytes_received <= 0)
 			continue;
@@ -219,9 +215,9 @@ void recv_message(int client_socket)
 		recv(client_socket, str, sizeof(str), 0);
 		//eraseText(6);
 		if (strcmp(name, "#NULL") != 0)
-			cout << color(color_code) << name << " : " << def_col << str << endl;
+			cout << name << " : "<< str << endl;
 		else
-			cout << color(color_code) << str << endl;
+			cout << str << endl;
 		cout << "You : " ;
 		fflush(stdout);
 	}
