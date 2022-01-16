@@ -47,7 +47,7 @@ int sign_up(string username, string password){
     string sql = "INSERT INTO USERS (USERNAME, PASSWORD) VALUES('"
                     + username + "', '" + password + "');";
     rc = sqlite3_exec(db, sql.c_str(), NULL, 0, NULL);
-    if(rc != SQLITE_OK) return -1;
+    if(rc != SQLITE_OK) return 0;
     else cout << "Account created." << endl;
 
     sql = "SELECT ID FROM USERS WHERE USERNAME = '" + username + "' AND PASSWORD = '" + password + "';";

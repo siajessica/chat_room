@@ -64,6 +64,7 @@ int main(){
     string command_s, username_s, password_s, target_user_s;
     char command[20], username[20], password[20], target_user[20];
 	int found_account = -1;
+	int ret = 0;
 	int chat_id = 0;
     while(1){
         cin.getline(command, MAX_LEN);
@@ -127,7 +128,7 @@ int main(){
 
 			if(command[0] == '0') cout << "User not found." << endl;
 			else if(command[0] == '1') cout << "User already blocked.\n";
-			else if(command[0] == '2') cout << "User blocked successfully." << endl;
+			else if(command[0] == '2') "User blocked successfully." << endl;
 		}
 		else if(command[0] == '6' && found_account){
 			cout << "Please enter friend's username: ";
