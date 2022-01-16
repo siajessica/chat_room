@@ -134,7 +134,7 @@ void handle_client(int client_socket, int id)
 {
 	char username[20], password[20], command[20],target_user[20];
 	string username_s, password_s,target_user_s;
-	int ret,ID,current_chat_id;
+	int ret = 0,ID,current_chat_id;
 	recv(client_socket, command, sizeof(command), 0);
 	cout << "sombody want";
 	while (1)
@@ -149,7 +149,7 @@ void handle_client(int client_socket, int id)
 			ID = login(username_s, password_s);
 			clients[id].id = ID;
 			clients[id].name = username_s;
-			if (ID!=0)
+			if (ID! = -1)
 				send(client_socket, "1", sizeof("1"), 0);
 			else
 				send(client_socket, "0", sizeof("0"), 0);
@@ -161,8 +161,8 @@ void handle_client(int client_socket, int id)
 			recv(client_socket, password, sizeof(password), 0);
 			username_s.assign(username);
 			password_s.assign(password);
-			ret = sign_up(username_s, password_s);
-			if (ret)
+			ID = sign_up(username_s, password_s);
+			if (ID != -1)
 				send(client_socket, "1", sizeof("1"), 0);
 			else
 				send(client_socket, "0", sizeof("0"), 0);
@@ -171,7 +171,7 @@ void handle_client(int client_socket, int id)
 			recv(client_socket, target_user, sizeof(target_user), 0);
 			target_user_s.assign(target_user);
 			ret = add_friend(username_s, target_user_s);
-			if (ret)
+			if (ret == 5)
 				send(client_socket, "1", sizeof("1"), 0);
 			else
 				send(client_socket, "0", sizeof("0"), 0);

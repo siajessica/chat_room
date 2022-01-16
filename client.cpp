@@ -79,7 +79,7 @@ int main(){
 			send(client_socket, password, sizeof(password), 0);
 			recv(client_socket, command, sizeof(command), 0);
 			found_account = atoi(command);
-			if(found_account != -1) {
+			if(found_account) {
 				cout << "WRONG USERNAME/PASSWORD. PLEASE TRY AGAIN." << endl;
 				cout << "PLEASE SIGN UP IF YOU DON'T HAVE AN ACCOUNT." << endl;
 			} else{
@@ -97,7 +97,7 @@ int main(){
 			send(client_socket, password, sizeof(password), 0);
 			recv(client_socket, command, sizeof(command), 0);
 			found_account = atoi(command);
-			if(found_account == -1){
+			if(found_account){
 				cout << "USERNAME HAS BEEN TAKEN." << endl;
 				cout << "PLEASE TRY AGAIN." << endl;
 			} else{
@@ -115,11 +115,8 @@ int main(){
 			send(client_socket, target_user, sizeof(target_user), 0);
 			recv(client_socket, command, sizeof(command), 0);
 
-			if(command[0] == 0) cout << "User not found." << endl;
-			else if(command[0] == '1') cout << "ERROR CANNOT ADD FRIEND: You have been blocked by the user.\n";
-			else if(command[0] == '2') cout << "ERROR BLOCKED: Please unblock the user before adding as friend.\n";
-			else if(command[0] == '3') cout << "You are already friends." << endl;
-			else if(command[0] == '5') cout << "Friend Added." << endl;
+			if(command[0] == '5') cout << "Friend Added." << endl;
+			else cout << "Add friend error." << endl;
 		}
 		else if(command[0] == '5' && found_account){
 			cout << "Please enter target's username: ";
@@ -128,8 +125,7 @@ int main(){
 			recv(client_socket, command, sizeof(command), 0);
 
 			if(command[0] == '0') cout << "User not found." << endl;
-			else if(command[0] == '1') cout << "User already blocked.\n";
-			else if(command[0] == '2') cout << "User blocked successfully." << endl;
+			else if(command[0] == '1') cout << "User removed.\n";
 		}
 		else if(command[0] == '6' && found_account){
 			cout << "Please enter friend's username: ";

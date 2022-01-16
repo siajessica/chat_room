@@ -89,7 +89,7 @@ int add_friend(string user1, string user2){
     }
 
     //check if the user is blocked
-    exist = 0;
+    /*exist = 0;
     sql = "SELECT * FROM BLOCKED WHERE USER1 = '" + user2 + "' AND USER2 = '" + user1 + "';";
     rc = sqlite3_exec(db, sql.c_str(), in_database, &exist, NULL);
     if(exist){
@@ -104,7 +104,7 @@ int add_friend(string user1, string user2){
     if(exist){
         printf("ERROR BLOCKED: Please unblock the user before adding as friend.\n");
         return 2;
-    }
+    }*/
 
     //check if they are already friends
     exist = 0;
