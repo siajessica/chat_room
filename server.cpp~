@@ -135,10 +135,10 @@ void handle_client(int client_socket, int id)
 	char username[20], password[20], command[20],target_user[20];
 	string username_s, password_s,target_user_s;
 	int ret = 0,ID,current_chat_id;
+	recv(client_socket, command, sizeof(command), 0);
 	cout << "sombody want";
 	while (1)
 	{
-		recv(client_socket, command, sizeof(command), 0);
 		if (command[0] == '1')
 		{
 			cout << "sign in" << endl;
